@@ -1,0 +1,133 @@
+import requests
+import pandas as pd
+import json
+
+url = "https://cdn.cs.trade:2096/api/prices_CSGO" # replace with the URL you want to retrieve
+response = requests.get(url) # send a GET request to the URL
+items = json.loads(response.text) # parse the response into a JSON object
+url2 = "https://api.swap.gg/v2/trade/prices/730"
+response2 = requests.get(url2)
+data2 = json.loads(response2.text)
+url3 = "https://api.swap.gg/v2/trade/inventory/bot/730"
+response3 = requests.get(url3)
+data3 = json.loads(response3.text)
+
+items_but_nice = {
+    'ItemNames': [],
+    'CsTradeStock': [],
+    'SwapCanTake': [],
+    'CsTradePricesBuy': [],
+    'SwapPricesSell': [],
+    'CsTradeToSwap': [],
+    '': [],
+    'ItemNames ': [],
+    'CsTradeCanTake': [],
+    'SwapStock': [],
+    'CsTradePricesSell': [],
+    'SwapPricesBuy': [],
+    'SwapToCsTrade': []
+}
+data2Results = data2["result"]
+data3Results = data3["result"]
+for item_name, item_data in items.items():
+    for item in data2Results:
+        if(item['marketName'] == item_name and item_data['price'] > 0.5):
+            CsTradeHave = item_data['have']
+            SwapGGHave = item['stock']['have']
+            CsTradeCanTake = item_data['can_take']
+            SwapGGMax = item['stock']['max']
+
+            if ((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (SwapGGHave > 0) and (CsTradeCanTake > 0)):
+                for itemNew in data3Results:
+                    if(itemNew['n'] == item_name):
+                        priceCSTradeBuy = item_data['price']
+                        priceSwapSell = item['price']['value']
+                        priceSwapBuy = itemNew['p']
+                        items_but_nice['ItemNames'].append(item_name)
+                        items_but_nice['CsTradeStock'].append(CsTradeHave)
+                        items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
+                        items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
+                        items_but_nice['SwapPricesSell'].append(priceSwapSell / 100)
+                        items_but_nice['CsTradeToSwap'].append((priceSwapSell / 100) / priceCSTradeBuy)
+                        items_but_nice[''].append('')
+                        items_but_nice['ItemNames '].append(item_name)
+                        items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
+                        items_but_nice['SwapStock'].append(SwapGGHave)
+                        items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
+                        items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
+                        items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
+            elif((CsTradeHave > 0) and (SwapGGMax > SwapGGHave)):
+                for itemNew in data3Results:
+                    if(itemNew['n'] == item_name):
+                        priceCSTradeBuy = item_data['price']
+                        priceSwapSell = item['price']['value']
+                        priceSwapBuy = itemNew['p']
+                        items_but_nice['ItemNames'].append(item_name)
+                        items_but_nice['CsTradeStock'].append(CsTradeHave)
+                        items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
+                        items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
+                        items_but_nice['SwapPricesSell'].append(priceSwapSell / 100)
+                        items_but_nice['CsTradeToSwap'].append((priceSwapSell / 100) / priceCSTradeBuy)
+                        items_but_nice[''].append('')
+                        items_but_nice['ItemNames '].append('')
+                        items_but_nice['CsTradeCanTake'].append(0)
+                        items_but_nice['SwapStock'].append(0)
+                        items_but_nice['CsTradePricesSell'].append(0)
+                        items_but_nice['SwapPricesBuy'].append(0)
+                        items_but_nice['SwapToCsTrade'].append(0)
+            elif(SwapGGHave > 0) and (CsTradeCanTake > 0):
+                for itemNew in data3Results:
+                    if(itemNew['n'] == item_name):
+                        priceCSTradeBuy = item_data['price']
+                        priceSwapSell = item['price']['value']
+                        priceSwapBuy = itemNew['p']
+                        items_but_nice['ItemNames'].append('')
+                        items_but_nice['CsTradeStock'].append(0)
+                        items_but_nice['SwapCanTake'].append(0)
+                        items_but_nice['CsTradePricesBuy'].append(0)
+                        items_but_nice['SwapPricesSell'].append(0)
+                        items_but_nice['CsTradeToSwap'].append(0)
+                        items_but_nice[''].append('')
+                        items_but_nice['ItemNames '].append(item_name)
+                        items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
+                        items_but_nice['SwapStock'].append(SwapGGHave)
+                        items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
+                        items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
+                        items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
+                        
+pairs = zip(items_but_nice['ItemNames'], items_but_nice['CsTradeStock'], items_but_nice['SwapCanTake'], items_but_nice['CsTradePricesBuy'], items_but_nice['SwapPricesSell'], items_but_nice['CsTradeToSwap'])
+sorted_pairs = sorted(pairs, key=lambda x: x[5], reverse=True)
+sorted_key1, sorted_key2, sorted_key3, sorted_key4, sorted_key5, sorted_key6 = zip(*sorted_pairs)
+
+items_but_nice['ItemNames'] = list(sorted_key1)
+items_but_nice['CsTradeStock'] = list(sorted_key2)
+items_but_nice['SwapCanTake'] = list(sorted_key3)
+items_but_nice['CsTradePricesBuy'] = list(sorted_key4)
+items_but_nice['SwapPricesSell'] = list(sorted_key5)
+items_but_nice['CsTradeToSwap'] = list(sorted_key6)
+
+pairs = zip(items_but_nice['ItemNames '], items_but_nice['CsTradeCanTake'], items_but_nice['SwapStock'], items_but_nice['CsTradePricesSell'], items_but_nice['SwapPricesBuy'], items_but_nice['SwapToCsTrade'])
+sorted_pairs = sorted(pairs, key=lambda x: x[5], reverse=True)
+sorted_key1, sorted_key2, sorted_key3, sorted_key4, sorted_key5, sorted_key6 = zip(*sorted_pairs)
+
+items_but_nice['ItemNames '] = list(sorted_key1)
+items_but_nice['CsTradeCanTake'] = list(sorted_key2)
+items_but_nice['SwapStock'] = list(sorted_key3)
+items_but_nice['CsTradePricesSell'] = list(sorted_key4)
+items_but_nice['SwapPricesBuy'] = list(sorted_key5)
+items_but_nice['SwapToCsTrade'] = list(sorted_key6)
+
+df = pd.DataFrame(items_but_nice)
+'''rows_to_sort = df.iloc[:, :6] 
+
+# Sort the separate DataFrame by the row you want to sort
+row_to_sort = 'CsTradeToSwap'  # Replace with the row you want to sort
+rows_to_sort = rows_to_sort.sort_values(by=row_to_sort, ascending=False)
+
+# Reindex the original DataFrame using the sorted row
+df = df.reindex(index=rows_to_sort.index)'''
+
+
+df.to_excel("C:\\Users\\drewb\\.vscode\\CSGOStuff\\CSGOWebsitePriceComparisons\\CSTradeAndSwapData.xlsx", index=False)
+
+#.79 and 1.275
