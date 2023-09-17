@@ -1,0 +1,44 @@
+from openpyxl import load_workbook
+import requests
+import json
+from selenium import webdriver
+
+        
+driver = webdriver.Chrome()
+offset = 0
+workbook = load_workbook(filename="FindingAllPricingDataOnWebsites\TradeitPricesSwap.xlsx")
+sheet = workbook.active
+c = 1
+Swapurl = "https://api.swap.gg/v2/trade/prices/730"
+response2 = requests.get(Swapurl)
+SwapDataGet = json.loads(response2.text)
+SwapData = SwapDataGet["result"]
+for i in range(50):
+    url = "https://tradeit.gg/api/v2/inventory/data?gameId=730&offset=" + str(offset) + "&limit100000&sortType=Popularity&searchValue=&minPrice=0&maxPrice=100000&minFloat=0&maxFloat=1&showTradeLock=true&colors=&showUserListing=true&fresh=true"
+    driver.get(url)
+    itemsGet = driver.find_element("xpath","/html/body/pre")
+    itemsGet = json.loads(itemsGet.text)
+    items = itemsGet['items']
+    for item in items:
+        name = item['name']
+        price = item['price'] / 100
+        if (price > .1):
+            sheet['A' + str(c)] = name
+            sheet['B' + str(c)] = price
+            SwapPrice = ''
+            for itemSwap in SwapData:
+                if(itemSwap['marketName'] == name):
+                    SwapPrice = itemSwap['price']['value']
+                    SwapPrice /= 100
+                    break
+            sheet['C' + str(c)] = SwapPrice
+            if "saleOfferOwner" in item:
+                sheet['D' + str(c)] = True
+            else:
+                sheet['D' + str(c)] = False
+            c+=1
+    workbook.save(filename="FindingAllPricingDataOnWebsites\TradeitPricesSwap.xlsx")
+    offset+=200
+driver.close()
+
+quit()
