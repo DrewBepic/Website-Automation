@@ -1,0 +1,51 @@
+from openpyxl import load_workbook
+import requests
+import json
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+offset = 0
+workbook = load_workbook(filename="FindingAllPricingDataOnWebsites\TradeitPricesCSTrade.xlsx")
+sheet = workbook.active
+c = 2
+CSTradeURL = "https://cdn.cs.trade:2096/api/prices_CSGO"
+response2 = requests.get(CSTradeURL)
+CSTradeData = json.loads(response2.text)
+#print (CSTradeData)
+for i in range(50):
+    url = "https://tradeit.gg/api/v2/inventory/data?gameId=730&offset=" + str(offset) + "&limit100000&sortType=Popularity&searchValue=&minPrice=0&maxPrice=100000&minFloat=0&maxFloat=1&showTradeLock=true&colors=&showUserListing=true&fresh=true"
+    driver.get(url)
+    itemsGet = driver.find_element("xpath","/html/body/pre")
+    itemsGet = json.loads(itemsGet.text)
+    items = itemsGet['items']
+    for item in items:
+        name = item['name']
+        if(name.count("Sealed Graffiti ") == 1):
+            break
+        price = item['price'] / 100
+        CSTradePrice = ''
+        HaveOnCSTrade = False
+        for item_name, item_data in CSTradeData.items():
+            if(item_name == name):
+                CSTradePrice = item_data['price']
+                CSTradePrice /= 1.075
+                CsTradeHave = item_data['have']
+                CSTradeCanTake = item_data['can_take']
+                HaveOnCSTrade = True
+                break
+        if(HaveOnCSTrade):
+            sheet['A' + str(c)] = name
+            sheet['B' + str(c)] = price
+            sheet['C' + str(c)] = CSTradePrice
+            sheet['E' + str(c)] = CsTradeHave
+            sheet['F' + str(c)] = CSTradeCanTake
+            if "saleOfferOwner" in item:
+                sheet['D' + str(c)] = True
+            else:
+                sheet['D' + str(c)] = False
+            c+=1
+    workbook.save(filename="FindingAllPricingDataOnWebsites\TradeitPricesCSTrade.xlsx")
+    offset+=200
+driver.close()
+
+quit()
