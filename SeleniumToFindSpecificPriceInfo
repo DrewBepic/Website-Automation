@@ -1,0 +1,304 @@
+import time
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.keys import Keys
+
+WebsiteInfo = {
+    'Websites': [],
+    'Ice Coaled Prices': [],
+    'Visions Prices': [],
+    'KissLove Prices': [],
+    'Average Price For Skins': []
+}
+
+# Swap.gg
+WebsiteInfo['Websites'].append('Swap.gg:')
+
+# driver
+driver = webdriver.Chrome()
+driver.get('https://swap.gg/prices')
+driver.maximize_window()
+time.sleep(2.5)
+
+class SwapHelp:
+    def SwapSearch(skin):
+        Search.clear()
+        Search.send_keys(skin)
+        time.sleep(1)
+
+    def GetPrice(skin, c):
+        ExactName = driver.find_element("xpath", '/html/body/div/div[1]/section[2]/div/div[2]/div[2]/div/div[2]/table/tbody/tr[' + str(c) + ']/td[1]/a').text
+        if (ExactName != skin):
+            return SwapHelp.GetPrice(skin, c+1)
+        else:
+            ExactNamePrice = driver.find_element("xpath", '/html/body/div/div[1]/section[2]/div/div[2]/div[2]/div/div[2]/table/tbody/tr[' + str(c) + ']/td[2]')
+            print(ExactNamePrice.text)
+            return(ExactNamePrice)
+
+Search = driver.find_element("xpath", '/html/body/div/div[1]/section[2]/div/div[2]/div[1]/div/div/div/input')
+
+skin = 'AK-47 | Ice Coaled (Factory New)'
+SwapHelp.SwapSearch(skin)
+IceCoaled = float(SwapHelp.GetPrice(skin, 1).text.replace('$',''))
+WebsiteInfo['Ice Coaled Prices'].append(IceCoaled)
+print(IceCoaled)
+
+Search.clear()
+skin = 'P250 | Visions (Factory New)'
+SwapHelp.SwapSearch(skin)
+Visions = float(SwapHelp.GetPrice(skin, 1).text.replace('$',''))
+WebsiteInfo['Visions Prices'].append(Visions)
+print(Visions)
+
+Search.clear()
+skin = 'Sawed-Off | Kiss♥Love (Minimal Wear)'
+SwapHelp.SwapSearch(skin)
+KissLove = float(SwapHelp.GetPrice(skin, 1).text.replace('$',''))
+WebsiteInfo['KissLove Prices'].append(KissLove)
+print(KissLove)
+
+driver.close()
+
+AverageOutcome = (IceCoaled + Visions + KissLove)/3
+EachInputPrice = AverageOutcome/10
+SomeLeeway = EachInputPrice/1.15
+
+WebsiteInfo['Average Price For Skins'].append(SomeLeeway)
+
+
+
+
+
+
+
+
+#CS.money
+WebsiteInfo['Websites'].append('CS.money')
+
+class CSMoneyHelp:
+    def Loading(skin):
+        try:
+            try:
+                Exist = driver.find_element("xpath", '/html/body/div[1]/div/div[1]/div[4]/div/div/div[1]/div/div[2]/div[3]/div[2]/div[2]/div[1]/div/div/div[2]').text
+                return 'None'
+            except:
+                RandomClick = driver.find_element("xpath", '/html/body/div[1]/div/div[1]/div[2]/div[1]/div')
+                RandomClick.click()
+                ClickSkin = driver.find_element("xpath", '/html/body/div[1]/div/div[1]/div[4]/div/div/div[1]/div/div[2]/div[3]/div[2]/div[2]/div/div/div/div/div/div/div/div/div/div[2]/img')
+                ClickSkin.click()
+                return 'Success'
+        except:
+            CSMoneyHelp.SearchHelper(skin)
+            return CSMoneyHelp.Loading(skin)
+    def SearchHelper(skin):
+        Search = driver.find_element("xpath", '/html/body/div[1]/div/div[1]/div[4]/div/div/div[1]/div/div[2]/div[3]/div[2]/div[1]/div/div[1]/div/div/input')
+        Search.clear()
+        Search.send_keys(skin)
+        time.sleep(5)
+
+driver = webdriver.Chrome()
+driver.get('https://cs.money/csgo/trade/?search=Sawed-Off%20Kiss%E2%99%A5Love&sort=price&order=asc&exterior=Minimal%20Wear&isStatTrak=false')
+driver.maximize_window()
+
+CookiesAccept = driver.find_element("xpath", '/html/body/div[4]/div/div[2]/div/div/button[1]')
+CookiesAccept.click()
+time.sleep(5)
+skin = 'Sawed-Off Kiss♥Love'
+Success = CSMoneyHelp.Loading(skin)
+time.sleep(2)
+
+if(Success == 'Success'):
+    a = ActionChains(driver)
+    PriceGetHover = driver.find_element("xpath", '/html/body/div[3]/div/div[3]/div/div/div[2]/div/div[2]/div[5]/div[2]/div[2]/div[1]/div[3]')
+    a.move_to_element(PriceGetHover).perform()
+    time.sleep(2)
+
+    PriceGet = driver.find_element("xpath", '/html/body/div[6]/div/div[1]/div/div[1]/span[2]/span/span')
+    KissLove = float(PriceGet.text.replace("$ ", ''))
+    print(KissLove*.93)
+    WebsiteInfo['KissLove Prices'].append(KissLove *.93)
+else:
+    print('10.44')
+    WebsiteInfo['KissLove Prices'].append('10.44')
+
+driver.close()
+
+
+driver = webdriver.Chrome()
+driver.get('https://cs.money/csgo/trade/?search=AK-47%20Ice%20Coaled&sort=price&order=asc&exterior=Factory%20New&isStatTrak=false')
+driver.maximize_window()
+
+CookiesAccept = driver.find_element("xpath", '/html/body/div[4]/div/div[2]/div/div/button[1]')
+CookiesAccept.click()
+time.sleep(5)
+skin = 'AK-47 Ice Coaled'
+Success = CSMoneyHelp.Loading(skin)
+time.sleep(2)
+
+if(Success == 'Success'):
+    a = ActionChains(driver)
+    PriceGetHover = driver.find_element("xpath", '/html/body/div[3]/div/div[3]/div/div/div[2]/div/div[2]/div[5]/div[2]/div[2]/div[1]/div[3]')
+    a.move_to_element(PriceGetHover).perform()
+    time.sleep(2)
+
+    PriceGet = driver.find_element("xpath", '/html/body/div[6]/div/div[1]/div/div[1]/span[2]/span/span')
+    IceCoaled = float(PriceGet.text.replace("$ ", ''))
+    print(IceCoaled * .93)
+    WebsiteInfo['Ice Coaled Prices'].append(IceCoaled *.93)
+else:
+    print('46.89')
+    WebsiteInfo['Ice Coaled Prices'].append('46.89')
+
+driver.close()
+
+
+driver = webdriver.Chrome()
+driver.get('https://cs.money/csgo/trade/?search=P250%20Visions&sort=price&order=asc&exterior=Factory%20New&isStatTrak=false')
+driver.maximize_window()
+
+CookiesAccept = driver.find_element("xpath", '/html/body/div[4]/div/div[2]/div/div/button[1]')
+CookiesAccept.click()
+time.sleep(5)
+skin = 'P250 Visions'
+Success = CSMoneyHelp.Loading(skin)
+time.sleep(2)
+
+if(Success == 'Success'):
+    a = ActionChains(driver)
+    PriceGetHover = driver.find_element("xpath", '/html/body/div[3]/div/div[3]/div/div/div[2]/div/div[2]/div[5]/div[2]/div[2]/div[1]/div[3]')
+    a.move_to_element(PriceGetHover).perform()
+    time.sleep(2)
+
+    PriceGet = driver.find_element("xpath", '/html/body/div[6]/div/div[1]/div/div[1]/span[2]/span/span')
+    Visions = float(PriceGet.text.replace("$ ", ''))
+    print(Visions * .93)
+    WebsiteInfo['Visions Prices'].append(Visions *.93)
+else:
+    print('19.03')
+    WebsiteInfo['Visions Prices'].append('19.03')
+
+driver.close()
+
+AverageOutcome = (IceCoaled + Visions + KissLove)/3
+EachInputPrice = AverageOutcome/10
+SomeLeeway = EachInputPrice/1.15
+
+WebsiteInfo['Average Price For Skins'].append(SomeLeeway)
+
+
+
+
+
+#CS.trade
+WebsiteInfo['Websites'].append('CS.trade')
+
+driver = webdriver.Chrome()
+driver.get('https://cs.trade/our-prices')
+driver.maximize_window()
+time.sleep(5)
+
+class CSTradeHelp:
+    def SearchSkins(skin, c):
+        Search = driver.find_element("xpath", '/html/body/div[1]/div[1]/input')
+        Search.clear()
+        Search.send_keys(skin)
+        SkinGet = driver.find_element("xpath", '/html/body/div[1]/div[1]/div[1]/div[2]/div/div[' + str(c) +']/div[1]').text
+        if(SkinGet == skin):
+            Price = driver.find_element("xpath", '/html/body/div[1]/div[1]/div[1]/div[2]/div/div[' + str(c) + ']/div[2]').text
+            return Price
+        else:
+            return CSTradeHelp.SearchSkins(skin, c + 1)
+
+skin = 'AK-47 | Ice Coaled (Factory New)'
+IceCoaled = float(CSTradeHelp.SearchSkins(skin, 1))
+print(IceCoaled /1.05)
+WebsiteInfo['Ice Coaled Prices'].append(IceCoaled / 1.05)
+
+skin = 'P250 | Visions (Factory New)'
+Visions = float(CSTradeHelp.SearchSkins(skin, 1))
+print(Visions / 1.05)
+WebsiteInfo['Visions Prices'].append(Visions / 1.05)
+
+skin = 'Sawed-Off | Kiss♥Love (Minimal Wear)'
+KissLove = float(CSTradeHelp.SearchSkins(skin, 1))
+print(KissLove / 1.05)
+WebsiteInfo['KissLove Prices'].append(KissLove / 1.05)
+
+AverageOutcome = (IceCoaled + Visions + KissLove)/3
+EachInputPrice = AverageOutcome/10
+SomeLeeway = EachInputPrice/1.15
+
+WebsiteInfo['Average Price For Skins'].append(SomeLeeway)
+
+
+
+
+
+
+#loot.farm
+WebsiteInfo['Websites'].append('Loot.farm')
+
+#driver
+driver = webdriver.Chrome()
+driver.get('https://loot.farm/en/pricelist.html')
+driver.maximize_window()
+time.sleep(2)
+
+class LootFarmHelp:
+    def SearchSkins(skin, c):
+        skinMaybe = driver.find_element("xpath", '/html/body/div[4]/div/div/div[4]/div[' + str(c) + ']/div[1]').text
+        if(skinMaybe == skin):
+            Price = driver.find_element("xpath", '/html/body/div[4]/div/div/div[4]/div['+ str(c) + ']/div[2]').text
+            return float(Price)
+        else:
+            return LootFarmHelp.SearchSkins(skin, c + 1)
+    def SearchHelp(skin):
+        Search = driver.find_element("xpath", '/html/body/div[4]/div/div/div[4]/div[1]/div[1]/input')
+        Search.clear()
+        Search.send_keys(skin)
+
+skin = 'AK-47 | Ice Coaled (Factory New)'
+LootFarmHelp.SearchHelp(skin)
+IceCoaled = LootFarmHelp.SearchSkins(skin, 2)
+print(IceCoaled * .92)
+WebsiteInfo['Ice Coaled Prices'].append(IceCoaled * .92)
+
+skin = 'P250 | Visions (Factory New)'
+LootFarmHelp.SearchHelp(skin)
+Visions = LootFarmHelp.SearchSkins(skin, 2)
+print(Visions * .92)
+WebsiteInfo['Visions Prices'].append(Visions * .92)
+
+skin = 'Sawed-Off | Kiss♥Love (Minimal Wear)'
+LootFarmHelp.SearchHelp(skin)
+KissLove = LootFarmHelp.SearchSkins(skin, 2)
+print(KissLove * .92)
+WebsiteInfo['KissLove Prices'].append(KissLove * .92)
+
+driver.close()
+
+AverageOutcome = (IceCoaled + Visions + KissLove)/3
+EachInputPrice = AverageOutcome/10
+SomeLeeway = EachInputPrice/1.15
+
+WebsiteInfo['Average Price For Skins'].append(SomeLeeway)
+
+
+
+
+
+
+df = pd.DataFrame(WebsiteInfo)
+df.to_excel("C:\\Users\\drewb\\.vscode\\CSGOStuff\\IceCoaledTradeUpCalculation.xlsx", index=False)
+
+
+
+
+
+
+print('Success!')
+quit()
+
+while (True):
+    pass
