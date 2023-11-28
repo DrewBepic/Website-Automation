@@ -1,6 +1,8 @@
 import requests
 import pandas as pd
 import json
+import time
+start_time = time.time()
 
 url = "https://cdn.cs.trade:2096/api/prices_CSGO" # replace with the URL you want to retrieve
 response = requests.get(url) # send a GET request to the URL
@@ -38,7 +40,7 @@ for item_name, item_data in items.items():
             SwapGGMax = item['stock']['max']
             priceCSTradeBuy = item_data['price']
             priceSwapSell = item['price']['value']
-            if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .8)):
+            if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .937)):
                 for itemNew in data3Results:
                     if(itemNew['n'] == item_name):
                         items_but_nice['ItemNames'].append(item_name)
@@ -101,3 +103,7 @@ items_but_nice['SwapToCsTrade'] = list(sorted_key6)
 
 df = pd.DataFrame(items_but_nice)
 df.to_excel("C:\\Users\\drewb\\VSProjects\\CSTradeAndSwap\\CsTradeAndSwapData.xlsx", index=False)
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+print(f"Time taken: {elapsed_time} seconds")
