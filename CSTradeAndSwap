@@ -42,44 +42,35 @@ for item in data2Results:
             SwapGGMax = item['stock']['max']
             priceCSTradeBuy = itemCSTrade['price']
             priceSwapSell = item['price']['value']
+            priceSwapBuy = item['price']['sides']['bot']
             if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .9253)):
-                for itemNew in data3Results:
-                    if(itemNew['n'] == name):
-                        items_but_nice['ItemNames'].append(name)
-                        items_but_nice['CsTradeStock'].append(CsTradeHave)
-                        items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
-                        items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
-                        items_but_nice['SwapPricesSell'].append(priceSwapSell / 100)
-                        items_but_nice['CsTradeToSwap'].append((priceSwapSell / 100) / priceCSTradeBuy)
-                        items_but_nice[''].append('')
-                        items_but_nice['ItemNames '].append('')
-                        items_but_nice['CsTradeCanTake'].append(0)
-                        items_but_nice['SwapStock'].append(0)
-                        items_but_nice['CsTradePricesSell'].append(0)
-                        items_but_nice['SwapPricesBuy'].append(0)
-                        items_but_nice['SwapToCsTrade'].append(0)
-                        break
-            elif((SwapGGHave > 0) and (CsTradeCanTake > 0)):
-                for itemNew in data3Results:
-                    if(itemNew['n'] == name):
-                        priceSwapBuy = itemNew['p']
-                        if(((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100)) > 1.080764171):
-                            items_but_nice['ItemNames'].append('')
-                            items_but_nice['CsTradeStock'].append(0)
-                            items_but_nice['SwapCanTake'].append(0)
-                            items_but_nice['CsTradePricesBuy'].append(0)
-                            items_but_nice['SwapPricesSell'].append(0)
-                            items_but_nice['CsTradeToSwap'].append(0)
-                            items_but_nice[''].append('')
-                            items_but_nice['ItemNames '].append(name)
-                            items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
-                            items_but_nice['SwapStock'].append(SwapGGHave)
-                            items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
-                            items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
-                            items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
-                            break
-                        else:
-                            break
+                items_but_nice['ItemNames'].append(name)
+                items_but_nice['CsTradeStock'].append(CsTradeHave)
+                items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
+                items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
+                items_but_nice['SwapPricesSell'].append(priceSwapSell / 100)
+                items_but_nice['CsTradeToSwap'].append((priceSwapSell / 100) / priceCSTradeBuy)
+                items_but_nice[''].append('')
+                items_but_nice['ItemNames '].append('')
+                items_but_nice['CsTradeCanTake'].append(0)
+                items_but_nice['SwapStock'].append(0)
+                items_but_nice['CsTradePricesSell'].append(0)
+                items_but_nice['SwapPricesBuy'].append(0)
+                items_but_nice['SwapToCsTrade'].append(0)
+            if((SwapGGHave > 0) and (CsTradeCanTake > 0) and (((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100)) > 1.080764171)):
+                items_but_nice['ItemNames'].append('')
+                items_but_nice['CsTradeStock'].append(0)
+                items_but_nice['SwapCanTake'].append(0)
+                items_but_nice['CsTradePricesBuy'].append(0)
+                items_but_nice['SwapPricesSell'].append(0)
+                items_but_nice['CsTradeToSwap'].append(0)
+                items_but_nice[''].append('')
+                items_but_nice['ItemNames '].append(name)
+                items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
+                items_but_nice['SwapStock'].append(SwapGGHave)
+                items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
+                items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
+                items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
                         
 pairs = zip(items_but_nice['ItemNames'], items_but_nice['CsTradeStock'], items_but_nice['SwapCanTake'], items_but_nice['CsTradePricesBuy'], items_but_nice['SwapPricesSell'], items_but_nice['CsTradeToSwap'])
 sorted_pairs = sorted(pairs, key=lambda x: x[5], reverse=True)
