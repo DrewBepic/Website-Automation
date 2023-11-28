@@ -31,19 +31,21 @@ items_but_nice = {
 }
 data2Results = data2["result"]
 data3Results = data3["result"]
-for item_name, item_data in items.items():
-    for item in data2Results:
-        if(item['marketName'] == item_name and item_data['price'] > 0.5):
-            CsTradeHave = item_data['have']
+for item in data2Results:
+    name = item['marketName']
+    if name in items:
+        itemCSTrade = items[name]
+        if(itemCSTrade['price'] > 0.5):
+            CsTradeHave = itemCSTrade['have']
             SwapGGHave = item['stock']['have']
-            CsTradeCanTake = item_data['can_take']
+            CsTradeCanTake = itemCSTrade['can_take']
             SwapGGMax = item['stock']['max']
-            priceCSTradeBuy = item_data['price']
+            priceCSTradeBuy = itemCSTrade['price']
             priceSwapSell = item['price']['value']
-            if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .937)):
+            if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .9253)):
                 for itemNew in data3Results:
-                    if(itemNew['n'] == item_name):
-                        items_but_nice['ItemNames'].append(item_name)
+                    if(itemNew['n'] == name):
+                        items_but_nice['ItemNames'].append(name)
                         items_but_nice['CsTradeStock'].append(CsTradeHave)
                         items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
                         items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
@@ -59,9 +61,9 @@ for item_name, item_data in items.items():
                         break
             elif((SwapGGHave > 0) and (CsTradeCanTake > 0)):
                 for itemNew in data3Results:
-                    if(itemNew['n'] == item_name):
+                    if(itemNew['n'] == name):
                         priceSwapBuy = itemNew['p']
-                        if(((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100)) > 1.00):
+                        if(((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100)) > 1.080764171):
                             items_but_nice['ItemNames'].append('')
                             items_but_nice['CsTradeStock'].append(0)
                             items_but_nice['SwapCanTake'].append(0)
@@ -69,7 +71,7 @@ for item_name, item_data in items.items():
                             items_but_nice['SwapPricesSell'].append(0)
                             items_but_nice['CsTradeToSwap'].append(0)
                             items_but_nice[''].append('')
-                            items_but_nice['ItemNames '].append(item_name)
+                            items_but_nice['ItemNames '].append(name)
                             items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
                             items_but_nice['SwapStock'].append(SwapGGHave)
                             items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
