@@ -36,32 +36,11 @@ for item_name, item_data in items.items():
             SwapGGHave = item['stock']['have']
             CsTradeCanTake = item_data['can_take']
             SwapGGMax = item['stock']['max']
-
-            if ((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (SwapGGHave > 0) and (CsTradeCanTake > 0)):
+            priceCSTradeBuy = item_data['price']
+            priceSwapSell = item['price']['value']
+            if((CsTradeHave > 0) and (SwapGGMax > SwapGGHave) and (((priceSwapSell / 100) / priceCSTradeBuy) > .8)):
                 for itemNew in data3Results:
                     if(itemNew['n'] == item_name):
-                        priceCSTradeBuy = item_data['price']
-                        priceSwapSell = item['price']['value']
-                        priceSwapBuy = itemNew['p']
-                        items_but_nice['ItemNames'].append(item_name)
-                        items_but_nice['CsTradeStock'].append(CsTradeHave)
-                        items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
-                        items_but_nice['CsTradePricesBuy'].append(priceCSTradeBuy)
-                        items_but_nice['SwapPricesSell'].append(priceSwapSell / 100)
-                        items_but_nice['CsTradeToSwap'].append((priceSwapSell / 100) / priceCSTradeBuy)
-                        items_but_nice[''].append('')
-                        items_but_nice['ItemNames '].append(item_name)
-                        items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
-                        items_but_nice['SwapStock'].append(SwapGGHave)
-                        items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
-                        items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
-                        items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
-            elif((CsTradeHave > 0) and (SwapGGMax > SwapGGHave)):
-                for itemNew in data3Results:
-                    if(itemNew['n'] == item_name):
-                        priceCSTradeBuy = item_data['price']
-                        priceSwapSell = item['price']['value']
-                        priceSwapBuy = itemNew['p']
                         items_but_nice['ItemNames'].append(item_name)
                         items_but_nice['CsTradeStock'].append(CsTradeHave)
                         items_but_nice['SwapCanTake'].append(SwapGGMax - SwapGGHave)
@@ -75,25 +54,28 @@ for item_name, item_data in items.items():
                         items_but_nice['CsTradePricesSell'].append(0)
                         items_but_nice['SwapPricesBuy'].append(0)
                         items_but_nice['SwapToCsTrade'].append(0)
-            elif(SwapGGHave > 0) and (CsTradeCanTake > 0):
+                        break
+            elif((SwapGGHave > 0) and (CsTradeCanTake > 0)):
                 for itemNew in data3Results:
                     if(itemNew['n'] == item_name):
-                        priceCSTradeBuy = item_data['price']
-                        priceSwapSell = item['price']['value']
                         priceSwapBuy = itemNew['p']
-                        items_but_nice['ItemNames'].append('')
-                        items_but_nice['CsTradeStock'].append(0)
-                        items_but_nice['SwapCanTake'].append(0)
-                        items_but_nice['CsTradePricesBuy'].append(0)
-                        items_but_nice['SwapPricesSell'].append(0)
-                        items_but_nice['CsTradeToSwap'].append(0)
-                        items_but_nice[''].append('')
-                        items_but_nice['ItemNames '].append(item_name)
-                        items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
-                        items_but_nice['SwapStock'].append(SwapGGHave)
-                        items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
-                        items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
-                        items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
+                        if(((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100)) > 1.00):
+                            items_but_nice['ItemNames'].append('')
+                            items_but_nice['CsTradeStock'].append(0)
+                            items_but_nice['SwapCanTake'].append(0)
+                            items_but_nice['CsTradePricesBuy'].append(0)
+                            items_but_nice['SwapPricesSell'].append(0)
+                            items_but_nice['CsTradeToSwap'].append(0)
+                            items_but_nice[''].append('')
+                            items_but_nice['ItemNames '].append(item_name)
+                            items_but_nice['CsTradeCanTake'].append(CsTradeCanTake)
+                            items_but_nice['SwapStock'].append(SwapGGHave)
+                            items_but_nice['CsTradePricesSell'].append(priceCSTradeBuy / 1.08)
+                            items_but_nice['SwapPricesBuy'].append(priceSwapBuy / 100)
+                            items_but_nice['SwapToCsTrade'].append((priceCSTradeBuy / 1.08) / (priceSwapBuy / 100))
+                            break
+                        else:
+                            break
                         
 pairs = zip(items_but_nice['ItemNames'], items_but_nice['CsTradeStock'], items_but_nice['SwapCanTake'], items_but_nice['CsTradePricesBuy'], items_but_nice['SwapPricesSell'], items_but_nice['CsTradeToSwap'])
 sorted_pairs = sorted(pairs, key=lambda x: x[5], reverse=True)
@@ -118,16 +100,4 @@ items_but_nice['SwapPricesBuy'] = list(sorted_key5)
 items_but_nice['SwapToCsTrade'] = list(sorted_key6)
 
 df = pd.DataFrame(items_but_nice)
-'''rows_to_sort = df.iloc[:, :6] 
-
-# Sort the separate DataFrame by the row you want to sort
-row_to_sort = 'CsTradeToSwap'  # Replace with the row you want to sort
-rows_to_sort = rows_to_sort.sort_values(by=row_to_sort, ascending=False)
-
-# Reindex the original DataFrame using the sorted row
-df = df.reindex(index=rows_to_sort.index)'''
-
-
-df.to_excel("C:\\Users\\drewb\\.vscode\\CSGOStuff\\CSGOWebsitePriceComparisons\\CSTradeAndSwapData.xlsx", index=False)
-
-#.79 and 1.275
+df.to_excel("C:\\Users\\drewb\\VSProjects\\CSTradeAndSwap\\CsTradeAndSwapData.xlsx", index=False)
